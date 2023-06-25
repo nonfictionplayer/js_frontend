@@ -2,12 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import todo from './redusers'
 import reportWebVitals from './reportWebVitals';
+import { legacy_createStore as createStore} from 'redux'
 
+const store = createStore(todo)
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <App store = {store}/>
   </React.StrictMode>
 );
 

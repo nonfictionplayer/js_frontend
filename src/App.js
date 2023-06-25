@@ -1,62 +1,36 @@
 import React from "react"
-import ToDoTask from "./ToDoTask"
+import { Provider, connect } from "react-redux";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import ToDoList from "./ToDoList";
 import ToDoTaskAdd from "./ToDoTaskAdd"
+import { todoAddALL } from "./actions";
 
 class App extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      tasks: []
-    }
-
-    this.onTaskDelete = this.onTaskDelete.bind(this)
-    this.onTaskAdd = this.onTaskAdd.bind(this)
-  }
 
   componentDidMount(){
-
     fetch('tasks').then(function(res) {
       return res.json()
     }).then((data)=>{
-      this.setState({
-        tasks: data
-      })
+      this.props.dispatch(todoAddALL(data))
     })
   }
-
-  onTaskDelete(_id) {
-    this.setState({
-      tasks: this.state.tasks.filter(function(task) {
-        return task._id !== _id
-      })
-    })
-  }
-
-  onTaskAdd(task) {
-    this.setState({
-      tasks: [...this.state.tasks, task]
-      })
-  }
-  
 
   render(){
-
     return (
       <div className="App">
-        <ToDoTaskAdd onTaskAdd={this.onTaskAdd} />
-        <ul>
-        {
-          this.state.tasks.map((task) => {
-            return(
-              <ToDoTask task={task} onTaskDelete={this.onTaskDelete}  key={task._id} />
-            )
-          })
-        }
-        </ul>
+        <Provider store={this.props.store}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<ToDoList  />} />
+              <Route path="/add" element={<ToDoTaskAdd  />} />
+            </Routes>
+          </Router>
+        </Provider>
       </div>
     );
   }
 }
 
-export default App;
+
+export default  connect() (App);

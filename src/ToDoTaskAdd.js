@@ -1,7 +1,10 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { connect } from "react-redux";
+import { NavLink } from "react-router-dom";
+import { todoAdd } from './actions';
 
-
-class ToDoTaskAdd extends React.Component {
+class ToDoTaskAddInner extends React.Component {
 
     constructor(props) {
         super(props)
@@ -32,6 +35,8 @@ class ToDoTaskAdd extends React.Component {
     }
 
     onAddFormSubmit(e){
+        e.preventDefault()
+        
         fetch(`tasks`, {
             method: 'POST',
             body: JSON.stringify({
@@ -40,25 +45,46 @@ class ToDoTaskAdd extends React.Component {
             }),
             headers:{
                 'Content-Type': 'application/json'
-            }
+            } 
         }).then((res)  => {
-            res.json()
+            return res.json()
         }).then((data) => {
-            console.log('Added')
-            console.log(data)
-            this.props.onTaskAdd(data)
+            this.props.dispatch(todoAdd(data._id, data.name, data.desriptiion))
+            this.props.history("/")
         })
     }
 
     render() {
         return (
-            <form onSubmit={this.onAddFormSubmit}>
-                <input type="text" value={this.state.name} onChange={this.onNameChange} placeholder='name' />
-                <input type="text" value={this.state.desriptiion} onChange={this.onDesriptiionChange} placeholder='desriptiion' />
-                <input type ="submit" />
-            </form>
+            <div className="Add">
+                <div className="list-header-tab list-header">
+                    <div className="list-header-title">
+                        <i className="fa fa-tasks">
+                        </i>
+                        &nbsp;Add Task 
+                    </div>
+                </div>
+                
+                <form onSubmit={this.onAddFormSubmit} className="add-main">
+                    <div className='form-groups'>
+                    <input type="text" value={this.state.name} onChange={this.onNameChange} placeholder='name' className='form-group' />
+                    <input type="text" value={this.state.desriptiion} onChange={this.onDesriptiionChange} placeholder='description' className='form-group'/>
+                    <button className='add-btn'>Add</button>
+                    </div>
+                </form>
+                <div className="d-block text-right card-footer">
+                    <button className="btn btn-primary">
+                        <NavLink to='/'>Bact to list</NavLink>
+                    </button>
+                </div>
+            </div>
         )
     }
 }
 
-export default ToDoTaskAdd
+const ToDoTaskAdd = (props) => {
+    return(
+        <ToDoTaskAddInner {...props} history={useNavigate()} />
+    )
+}
+export default connect() (ToDoTaskAdd)
